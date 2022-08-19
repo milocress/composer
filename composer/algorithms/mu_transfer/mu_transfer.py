@@ -8,7 +8,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mup import MuAdam, MuSGD
+from mup import MuAdam, MuSGD, MuReadout, set_base_shapes
+from torchvision.models.resnet import ResNet, BasicBlock
 
 from composer.core import Algorithm, Event, State
 from composer.loggers import Logger
@@ -18,6 +19,9 @@ log = logging.getLogger(__name__)
 
 __all__ = ['MUP']
 
+def resnet_surgery(model: ResNet) -> ResNet:
+    model.fc = MuReadout(model.fc.in_features, model.fc.out_features, readout_zero_init=True)
+    return model
 
 class MUP(Algorithm):
     """
@@ -25,10 +29,12 @@ class MUP(Algorithm):
 
     def __init__(
         self,
-        optimizer_family: str
+        optimizer_family: str,
+        model_family: str,
     ):
         """__init__ is constructed from the same fields as in hparams."""
         self.optimizer_family = optimizer_family
+        self.model_family = model_family
 
     def match(self, event: Event, state: State) -> bool:
         return event == Event.INIT
@@ -44,6 +50,16 @@ class MUP(Algorithm):
             wrapper = MuSGD
         else:
             raise ValueError(f'Unknown optimizer family: {self.optimizer_family}')
+
+        if self.model_family == 'resnet':
+            model = resnet_surgery(state.model.module)
+            resnet_small = resnet_surgery(ResNet(BasicBlock, [2,2,2,2]))
+            resnet_delta = resnet_surgery(ResNet(BasicBlock, [3,4,6,3]))
+            set_base_shapes(model, resnet_small, delta=resnet_delta)
+
+        else:
+            raise ValueError(f'Unknown model family: {self.model_family}')
+
 
         def construct_optimizer(base_optimizer):
             def MuOptimizer(params, **kwargs):
