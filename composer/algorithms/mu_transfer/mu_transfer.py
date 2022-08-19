@@ -24,9 +24,12 @@ def resnet_surgery(model: ResNet) -> ResNet:
     return model
 
 class MUP(Algorithm):
-    """
-    """
+    """Mu Transfer algorithm (TODO: expand stub)
 
+    Args: 
+        optimizer_family (str): Optimizer family
+        model_family (str): Model family
+    """
     def __init__(
         self,
         optimizer_family: str,
