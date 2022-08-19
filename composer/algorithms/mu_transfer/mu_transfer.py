@@ -37,6 +37,9 @@ class MuOptimizer:
     def step(self, *args, **kwargs):
         return self.base_optimizer.step(*args, **kwargs)
 
+    def add_param_group(self, param_group):
+        return self.base_optimizer.add_param_group(param_group)
+
 class MUP(Algorithm):
     """Mu Transfer algorithm (TODO: expand stub)
 
