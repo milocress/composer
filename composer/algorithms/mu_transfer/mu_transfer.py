@@ -23,6 +23,17 @@ def resnet_surgery(model: ResNet) -> ResNet:
     model.fc = MuReadout(model.fc.in_features, model.fc.out_features, readout_zero_init=True)
     return model
 
+class MuOptimizer:
+    def __init__(self, base_optimizer, wrapper):
+        self.base_optimizer = base_optimizer
+        self.wrapper = wrapper
+
+    def __call__(self, params, **kwargs):
+        return self.wrapper(params, impl=self.base_optimizer, **kwargs)
+                
+    def zero_grad(self):
+        return self.base_optimizer.zero_grad() # type: ignore
+
 class MUP(Algorithm):
     """Mu Transfer algorithm (TODO: expand stub)
 
@@ -65,10 +76,7 @@ class MUP(Algorithm):
 
 
         def construct_optimizer(base_optimizer):
-            def MuOptimizer(params, **kwargs):
-                return wrapper(params, impl=base_optimizer, **kwargs)
-
-            return MuOptimizer
+            return MuOptimizer(base_optimizer, wrapper)
 
         state.optimizers = tuple(
             construct_optimizer(
