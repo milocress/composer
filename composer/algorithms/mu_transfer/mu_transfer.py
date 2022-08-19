@@ -9,6 +9,7 @@ import logging
 from typing import Optional
 
 from mup import MuAdam, MuSGD, MuReadout, set_base_shapes
+from torch_optimizer import Optimizer
 from torchvision.models.resnet import ResNet, Bottleneck
 
 import torch
@@ -22,9 +23,10 @@ log = logging.getLogger(__name__)
 __all__ = ['MUP']
 
 class MuOptimizer:
-    def __init__(self, base_optimizer, wrapper):
+    def __init__(self, base_optimizer: Optimizer, wrapper):
         self.base_optimizer = base_optimizer
         self.wrapper = wrapper
+        self.param_groups = base_optimizer.param_groups
 
     def __call__(self, params, **kwargs):
         return self.wrapper(params, impl=self.base_optimizer, **kwargs)
