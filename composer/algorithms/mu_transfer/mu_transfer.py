@@ -11,6 +11,8 @@ from typing import Optional
 from mup import MuAdam, MuSGD, MuReadout, set_base_shapes
 from torchvision.models.resnet import ResNet, Bottleneck
 
+import torch
+
 from composer.core import Algorithm, Event, State
 from composer.loggers import Logger
 from composer.utils import ensure_tuple
@@ -18,10 +20,6 @@ from composer.utils import ensure_tuple
 log = logging.getLogger(__name__)
 
 __all__ = ['MUP']
-
-def resnet_surgery(model: ResNet) -> ResNet:
-    model.fc = MuReadout(model.fc.in_features, model.fc.out_features, readout_zero_init=True)
-    return model
 
 class MuOptimizer:
     def __init__(self, base_optimizer, wrapper):
@@ -49,6 +47,13 @@ class MUP(Algorithm):
         """__init__ is constructed from the same fields as in hparams."""
         self.optimizer_family = optimizer_family
         self.model_family = model_family
+        self.device = 'gpu' if torch.cuda.is_available() else 'cpu' # select the device
+    
+    def resnet_surgery(self, model: ResNet) -> ResNet:
+        model.fc = MuReadout(model.fc.in_features, model.fc.out_features, readout_zero_init=True)
+        model.fc.to(self.device)
+        return model
+
 
     def match(self, event: Event, state: State) -> bool:
         return event == Event.INIT
@@ -66,9 +71,9 @@ class MUP(Algorithm):
             raise ValueError(f'Unknown optimizer family: {self.optimizer_family}')
 
         if self.model_family == 'resnet50':
-            model = resnet_surgery(state.model.module)
-            resnet_small = resnet_surgery(ResNet(Bottleneck, [3,4,6,3], width_per_group=1))
-            resnet_delta = resnet_surgery(ResNet(Bottleneck, [3,4,6,3], width_per_group=2))
+            model = self.resnet_surgery(state.model.module)
+            resnet_small = self.resnet_surgery(ResNet(Bottleneck, [3,4,6,3], width_per_group=1))
+            resnet_delta = self.resnet_surgery(ResNet(Bottleneck, [3,4,6,3], width_per_group=2))
             set_base_shapes(model, resnet_small, delta=resnet_delta)
 
         else:
