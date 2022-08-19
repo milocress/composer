@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 
 from mup import MuAdam, MuSGD, MuReadout, set_base_shapes
-from torchvision.models.resnet import ResNet, BasicBlock
+from torchvision.models.resnet import ResNet, Bottleneck
 
 from composer.core import Algorithm, Event, State
 from composer.loggers import Logger
@@ -56,8 +56,8 @@ class MUP(Algorithm):
 
         if self.model_family == 'resnet':
             model = resnet_surgery(state.model.module)
-            resnet_small = resnet_surgery(ResNet(BasicBlock, [2,2,2,2]))
-            resnet_delta = resnet_surgery(ResNet(BasicBlock, [3,4,6,3]))
+            resnet_small = resnet_surgery(ResNet(Bottleneck, [2,2,2,2]))
+            resnet_delta = resnet_surgery(ResNet(Bottleneck, [3,4,6,3]))
             set_base_shapes(model, resnet_small, delta=resnet_delta)
 
         else:
