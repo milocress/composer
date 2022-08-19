@@ -47,7 +47,7 @@ class MUP(Algorithm):
         """__init__ is constructed from the same fields as in hparams."""
         self.optimizer_family = optimizer_family
         self.model_family = model_family
-        self.device = 'gpu' if torch.cuda.is_available() else 'cpu' # select the device
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu' # select the device
     
     def resnet_surgery(self, model: ResNet) -> ResNet:
         model.fc = MuReadout(model.fc.in_features, model.fc.out_features, readout_zero_init=True)
