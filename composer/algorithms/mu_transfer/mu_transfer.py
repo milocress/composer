@@ -34,6 +34,9 @@ class MuOptimizer:
     def zero_grad(self):
         return self.base_optimizer.zero_grad() # type: ignore
 
+    def step(self, *args, **kwargs):
+        return self.base_optimizer.step(*args, **kwargs)
+
 class MUP(Algorithm):
     """Mu Transfer algorithm (TODO: expand stub)
 
