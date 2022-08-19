@@ -54,10 +54,10 @@ class MUP(Algorithm):
         else:
             raise ValueError(f'Unknown optimizer family: {self.optimizer_family}')
 
-        if self.model_family == 'resnet':
+        if self.model_family == 'resnet50':
             model = resnet_surgery(state.model.module)
-            resnet_small = resnet_surgery(ResNet(Bottleneck, [2,2,2,2]))
-            resnet_delta = resnet_surgery(ResNet(Bottleneck, [3,4,6,3]))
+            resnet_small = resnet_surgery(ResNet(Bottleneck, [3,4,6,3], width_per_group=1))
+            resnet_delta = resnet_surgery(ResNet(Bottleneck, [3,4,6,3], width_per_group=2))
             set_base_shapes(model, resnet_small, delta=resnet_delta)
 
         else:
