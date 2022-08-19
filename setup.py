@@ -191,6 +191,10 @@ extra_deps['onnx'] = [
     'onnxruntime>=1.11.0,<2',
 ]
 
+extra_deps['mup'] = [
+    'mup',
+]
+
 extra_deps['all'] = set(dep for deps in extra_deps.values() for dep in deps)
 
 composer_data_files = ['py.typed']

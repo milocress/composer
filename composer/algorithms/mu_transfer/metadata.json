@@ -1,0 +1,15 @@
+{
+    "sam": {
+        "name": "MUP",
+        "class_name": "MUP",
+        "functional": "",
+        "tldr": "Mu Transfer",
+        "attribution": "(Yang, Hu, et. al 2022)",
+        "link": "https://arxiv.org/pdf/2203.03466",
+        "domains": [
+            "cv",
+            "nlp"
+        ],
+        "summary": "Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer."
+    }
+}
