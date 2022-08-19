@@ -21,6 +21,7 @@ from composer.algorithms.gradient_clipping import GradientClipping
 from composer.algorithms.label_smoothing import LabelSmoothing
 from composer.algorithms.layer_freezing import LayerFreezing
 from composer.algorithms.mixup import MixUp
+from composer.algorithms.mu_transfer.mu_transfer import MUP
 from composer.algorithms.no_op_model import NoOpModel
 from composer.algorithms.progressive_resizing import ProgressiveResizing
 from composer.algorithms.randaugment import RandAugment
@@ -45,6 +46,7 @@ algorithm_registry: Dict[str, Union[Type[Algorithm], Type[hp.Hparams]]] = {
     'ghost_batchnorm': GhostBatchNorm,
     'label_smoothing': LabelSmoothing,
     'layer_freezing': LayerFreezing,
+    'mu_transfer': MUP,
     'squeeze_excite': SqueezeExcite,
     'swa': SWA,
     'no_op_model': NoOpModel,
